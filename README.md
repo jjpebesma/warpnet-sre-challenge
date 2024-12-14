@@ -10,6 +10,7 @@ You can use to following command to start the application:
 ```bash
 cd app
 pip install -r requirements.txt
+export FLASK_SECRET_KEY=$(cat /dev/urandom | tr -dc 'a-f0-9' | fold -w 64 | head -n 1)
 flask --app application run
 ```
 

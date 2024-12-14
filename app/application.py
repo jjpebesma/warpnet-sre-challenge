@@ -1,10 +1,12 @@
 import sqlite3
 import logging
+import secrets
+import os
 from flask import Flask, session, redirect, url_for, request, render_template, abort
 
 
 app = Flask(__name__)
-app.secret_key = b"192b9bdd22ab9ed4d12e236c78afcb9a393ec15f71bbf5dc987d54727823bcbf"
+app.secret_key = os.getenv("FLASK_SECRET_KEY", default=secrets.token_hex()).encode()
 app.logger.setLevel(logging.INFO)
 
 
