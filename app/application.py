@@ -27,11 +27,11 @@ def authenticate(username, password):
 
     for user in users:
         if user["username"] == username and user["password"] == password:
-            app.logger.info(f"the user '{username}' logged in successfully with password '{password}'")
+            app.logger.info(f"the user '{username}' logged in successfully")
             session["username"] = username
             return True
 
-    app.logger.warning(f"the user '{ username }' failed to log in '{ password }'")
+    app.logger.warning(f"the user '{ username }' failed to log in")
     abort(401)
 
 
