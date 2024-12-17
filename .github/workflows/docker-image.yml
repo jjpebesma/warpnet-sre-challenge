@@ -17,6 +17,6 @@ jobs:
     - name: Build the Docker image
       run: docker build . --file Dockerfile --tag jjpebesma/warpnet-sre-challenge:$(date +%s)
     - name: Log in to docker hub
-      run: docker login -u jjpebesma -p $DOCKER_HUB_PAT
+      run: docker login -u jjpebesma -p ${{ secrets.DOCKER_HUB_PAT }}
     - name: Push to docker hub
       run: docker image push jjpebesma/warpnet-sre-challenge
