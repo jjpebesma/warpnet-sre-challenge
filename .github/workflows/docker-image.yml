@@ -12,11 +12,14 @@ jobs:
 
     runs-on: ubuntu-latest
 
+
+    env:
+      TAG: $(date +%s)
     steps:
     - uses: actions/checkout@v4
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag jjpebesma/warpnet-sre-challenge:$(date +%s)
+      run: docker build . --file Dockerfile --tag jjpebesma/warpnet-sre-challenge:$TAG
     - name: Log in to docker hub
       run: docker login -u jjpebesma -p ${{ secrets.DOCKER_HUB_PAT }}
     - name: Push to docker hub
-      run: docker image push jjpebesma/warpnet-sre-challenge
+      run: docker image push jjpebesma/warpnet-sre-challenge:$TAG
