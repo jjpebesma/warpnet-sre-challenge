@@ -15,6 +15,26 @@ def get_db_connection():
     connection.row_factory = sqlite3.Row
     return connection
 
+def init_sqlite():
+    password = os.getenv("ADMIN_PASSWORD")
+    connection = get_db_connection()
+    cursor = connection.cursor()
+    cursor.execute("CREATE TABLE IF NOT EXISTS users(id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT NOT NULL UNIQUE, password TEXT NOT NULL)")
+    try:
+        cursor.execute("INSERT INTO users (username, password) VALUES (?, ?)", ("admin", password))
+        connection.commit()
+    except sqlite3.IntegrityError as e:
+        cursor.execute("SELECT * FROM users")
+        users = cursor.fetchall()
+        if "NOT NULL" in str(e):
+            if not users:
+                exit(e)
+            else:
+                app.logger.info(e)
+        else:
+            app.logger.warning(e)
+    connection.close()
+init_sqlite()
 
 def is_authenticated():
     if "username" in session:
