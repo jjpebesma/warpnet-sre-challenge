@@ -1,0 +1,24 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set the tag env var
+      run: export TAG=$(date +%s)
+    - name: Build the Docker image
+      run: docker build . --file Dockerfile --tag jjpebesma/warpnet-sre-challenge:$TAG
+    - name: Log in to docker hub
+      run: docker login -u jjpebesma -p $DOCKER_HUB_PAT
+    - name: Push to docker hub
+      run: docker image push jjpebesma/warpnet-sre-challenge:$TAG
