@@ -1,6 +1,6 @@
 services:
   sre-challenge:
-    image: sre-challenge
+    image: jjpebesma/warpnet-sre-challenge
     container_name: sre-challenge
     ports:
       - 5000:5000
