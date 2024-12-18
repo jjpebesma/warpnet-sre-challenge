@@ -18,6 +18,7 @@ def get_db_connection():
 
 def init_sqlite():
     password = os.getenv("ADMIN_PASSWORD")
+    del os.environ["ADMIN_PASSWORD"]
     connection = get_db_connection()
     cursor = connection.cursor()
     cursor.execute("CREATE TABLE IF NOT EXISTS users(id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT NOT NULL UNIQUE, hash BLOB NOT NULL)")
