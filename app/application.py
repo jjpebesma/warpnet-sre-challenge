@@ -41,19 +41,18 @@ def is_authenticated():
         return True
     return False
 
-
-def authenticate(username, password):
+def authenticate(username, password, ip):
     connection = get_db_connection()
     users = connection.execute("SELECT * FROM users").fetchall()
     connection.close()
 
     for user in users:
         if user["username"] == username and user["password"] == password:
-            app.logger.info(f"the user '{username}' logged in successfully")
+            app.logger.info(f"the user '{username}' logged in successfully from { ip }")
             session["username"] = username
             return True
 
-    app.logger.warning(f"the user '{ username }' failed to log in")
+    app.logger.warning(f"the user '{ username }' failed to log in from { ip }")
     abort(401)
 
 
@@ -67,7 +66,8 @@ def login():
     if request.method == "POST":
         username = request.form.get("username")
         password = request.form.get("password")
-        if authenticate(username, password):
+        ip = request.remote_addr
+        if authenticate(username, password, ip):
             return redirect(url_for("index"))
     return render_template("login.html")
 
