@@ -2,6 +2,7 @@ import sqlite3
 import logging
 import secrets
 import os
+import bcrypt
 from flask import Flask, session, redirect, url_for, request, render_template, abort
 
 
@@ -19,20 +20,21 @@ def init_sqlite():
     password = os.getenv("ADMIN_PASSWORD")
     connection = get_db_connection()
     cursor = connection.cursor()
-    cursor.execute("CREATE TABLE IF NOT EXISTS users(id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT NOT NULL UNIQUE, password TEXT NOT NULL)")
+    cursor.execute("CREATE TABLE IF NOT EXISTS users(id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT NOT NULL UNIQUE, hash BLOB NOT NULL)")
     try:
-        cursor.execute("INSERT INTO users (username, password) VALUES (?, ?)", ("admin", password))
+        pw_hash = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+        cursor.execute("INSERT INTO users (username, hash) VALUES (?, ?)", ("admin", pw_hash))
         connection.commit()
     except sqlite3.IntegrityError as e:
+        app.logger.warning(f"{e} - A user with this username already exists. The password has not been changed.")
+    except AttributeError as e:
         cursor.execute("SELECT * FROM users")
-        users = cursor.fetchall()
-        if "NOT NULL" in str(e):
-            if not users:
-                exit(e)
-            else:
-                app.logger.info(e)
+        users = cursor.fetchall()   
+        if users:
+            app.logger.debug(e)
         else:
-            app.logger.warning(e)
+            app.logger.error(e)
+            exit()
     connection.close()
 init_sqlite()
 
@@ -47,7 +49,7 @@ def authenticate(username, password, ip):
     connection.close()
 
     for user in users:
-        if user["username"] == username and user["password"] == password:
+        if user["username"] == username and bcrypt.checkpw(password.encode('utf-8'),user['hash']) == True:
             app.logger.info(f"the user '{username}' logged in successfully from { ip }")
             session["username"] = username
             return True
