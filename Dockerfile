@@ -3,5 +3,5 @@ WORKDIR /app
 COPY /app/requirements.txt .
 RUN pip install -r requirements.txt
 COPY /app .
-CMD ["flask","--app", "application", "run"]
+CMD ["gunicorn", "--bind", "0.0.0.0:5000" ,"application:app"]
 EXPOSE 5000
