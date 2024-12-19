@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sre-challenge-deployment
+  labels:
+    app: sre-challenge
+spec:
+  selector:
+    matchLabels:
+      app: sre-challenge
+  template:
+    metadata:
+      labels:
+        app: sre-challenge
+    spec:
+      containers:
+        - name: sre-challenge
+          image: jjpebesma/warpnet-sre-challenge:latest
+          env:
+            - name: ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: sre-challenge-secret
+                  key: password
+            - name: FLASK_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: sre-challenge-secret
+                  key: secret-key
+            - name: FLASK_RUN_HOST
+              value: "0.0.0.0"
+          ports:
+            - containerPort: 5000
+              name: web
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: sre-challenge-service
+  labels:
+    app: sre-challenge
+spec:
+  selector:
+    app: sre-challenge
+  ports:
+    - protocol: TCP
+      port: 5000
+      targetPort: 5000
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: sre-challenge-ingress
+  labels:
+    app: sre-challenge
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: sre-challenge.test
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: sre-challenge-service
+                port:
+                  number: 5000

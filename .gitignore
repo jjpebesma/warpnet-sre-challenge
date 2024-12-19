@@ -161,3 +161,6 @@ cython_debug/
 
 # Sqlite Databases
 *.db
+
+# Kubernetes secrets
+*secrets.yaml
