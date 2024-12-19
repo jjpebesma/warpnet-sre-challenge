@@ -4,11 +4,17 @@ import secrets
 import os
 import bcrypt
 from flask import Flask, session, redirect, url_for, request, render_template, abort
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 
 app = Flask(__name__)
 app.secret_key = os.getenv("FLASK_SECRET_KEY", default=secrets.token_hex()).encode()
 app.logger.setLevel(logging.INFO)
+if os.getenv("PROXY") == "true":
+    app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1)
+    app.logger.info("Configured application to run behind a proxy")
+else:
+    app.logger.warn("Configured application to run without a proxy")
 
 
 def get_db_connection():
