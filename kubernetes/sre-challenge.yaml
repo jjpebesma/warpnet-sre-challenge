@@ -32,6 +32,26 @@ spec:
           ports:
             - containerPort: 5000
               name: web
+          volumeMounts:
+            - mountPath: "/app/data"
+              name: data-volume
+      volumes:
+        - name: data-volume
+          persistentVolumeClaim:
+            claimName: sre-challenge-pvc
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  labels:
+    app: sre-challenge
+  name: sre-challenge-pvc
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 500Mi
 ---
 apiVersion: v1
 kind: Service

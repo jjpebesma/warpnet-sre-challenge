@@ -12,12 +12,16 @@ app.logger.setLevel(logging.INFO)
 
 
 def get_db_connection():
-    connection = sqlite3.connect("database.db")
+    connection = sqlite3.connect("data/database.db")
     connection.row_factory = sqlite3.Row
     return connection
 
 def init_sqlite():
     password = os.getenv("ADMIN_PASSWORD")
+    try:
+        os.makedirs("data")
+    except OSError as e:
+        app.logger.debug(e)
     del os.environ["ADMIN_PASSWORD"]
     connection = get_db_connection()
     cursor = connection.cursor()
