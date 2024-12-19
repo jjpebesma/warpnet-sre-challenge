@@ -13,6 +13,7 @@ app = Flask(__name__)
 limiter = Limiter(
     get_remote_address,
     app=app,
+    default_limits=["60 per minute"],
     storage_uri="memory://",
 )
 app.secret_key = os.getenv("FLASK_SECRET_KEY", default=secrets.token_hex()).encode()
