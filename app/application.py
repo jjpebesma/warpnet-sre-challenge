@@ -92,10 +92,10 @@ def index():
 
 
 @app.route("/login", methods=["GET", "POST"])
-"""
-Attempts to authenticate with the requested username and password
-"""
 def login():
+    """
+    Attempts to authenticate with the requested username and password
+    """
     if request.method == "POST":
         username = request.form.get("username")
         password = request.form.get("password")
@@ -106,10 +106,10 @@ def login():
 
 
 @app.route("/logout")
-"""
-Removes the user from the session list
-"""
 def logout():
+    """
+    Removes the user from the session list
+    """
     session.pop("username", None)
     return redirect(url_for("index"))
 

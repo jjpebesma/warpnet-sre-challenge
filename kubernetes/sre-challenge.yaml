@@ -29,6 +29,8 @@ spec:
                   key: secret-key
             - name: FLASK_RUN_HOST
               value: "0.0.0.0"
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              value: "opentelemetry-collector:4317"
           ports:
             - containerPort: 5000
               name: web
