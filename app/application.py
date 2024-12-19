@@ -4,10 +4,17 @@ import secrets
 import os
 import bcrypt
 from flask import Flask, session, redirect, url_for, request, render_template, abort
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 from werkzeug.middleware.proxy_fix import ProxyFix
 
 
 app = Flask(__name__)
+limiter = Limiter(
+    get_remote_address,
+    app=app,
+    storage_uri="memory://",
+)
 app.secret_key = os.getenv("FLASK_SECRET_KEY", default=secrets.token_hex()).encode()
 app.logger.setLevel(logging.INFO)
 if os.getenv("PROXY") == "true":
@@ -75,6 +82,7 @@ def index():
 
 
 @app.route("/login", methods=["GET", "POST"])
+@limiter.limit("5/minute", override_defaults=False)
 def login():
     if request.method == "POST":
         username = request.form.get("username")
